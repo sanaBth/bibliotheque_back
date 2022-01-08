@@ -6,6 +6,27 @@ const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
 
 
+//add user  as admin
+router.post("/registeradmin", async (req, res) => {
+    let newUser = new User();
+    newUser.name = req.body.name;
+    newUser.email = req.body.email;
+    newUser.type = "admin";
+    newUser.password = await bcrypt.hash(req.body.password, 10)
+    User.findOne({ email: req.body.email }, function (err, user) {
+        if (!user) {
+            newUser.save()
+                .then(result => res.status(201).json(result))
+                .catch(err => res.status(500).json(err));
+        }
+        else {
+            res.status(500).json("Email existe déjà");
+        }
+    });
+
+
+})
+
 //add user 
   router.post("/register", async (req, res) => {
     let newUser = new User();
